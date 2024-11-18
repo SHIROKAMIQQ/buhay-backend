@@ -7,5 +7,5 @@ from typing import List
 router = APIRouter()
 
 @router.get("/tsp")
-async def tsp(points: List[Point]):
-    return {"message": "BIG FILES"} #THIS IS A FILLER
+async def tsp(points: List[Point]) -> List[Point]:
+    return points #THIS IS A FILLER
