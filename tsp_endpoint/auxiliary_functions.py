@@ -28,3 +28,12 @@ async def create_graph(points: List[Point]) -> nx.Graph:
             )
     
     return G
+
+async def node_to_json_parser(G: nx.Graph, nodes: List[int]) -> List[Point]:
+    ret: List[Point] = []
+    for node in nodes:
+        ret.append({
+            "location_name": G.nodes[node]["location_name"],
+            "coordinates": [G.nodes[node]["lat"], G.nodes[node]["lng"]]
+        })
+    return ret
