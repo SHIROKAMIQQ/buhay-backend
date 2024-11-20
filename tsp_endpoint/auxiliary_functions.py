@@ -3,8 +3,7 @@ from osmnx.distance import great_circle
 from tsp_endpoint.models import Point
 from typing import List
 
-async def create_graph(points: List[Point]) -> nx.Graph:
-    
+def create_graph(points: List[Point]) -> nx.Graph: 
     n = len(points) 
     G = nx.Graph()
 
@@ -22,14 +21,34 @@ async def create_graph(points: List[Point]) -> nx.Graph:
         lat_i, lng_i = points[i].coordinates
         for j in range(i+1, n):
             lat_j, lng_j = points[j].coordinates
+            haversine_distance = great_circle(lat_i, lng_i, lat_j, lng_j)
             G.add_edge(
                 i, j,
-                weight = great_circle(lat_i, lng_i, lat_j, lng_j)
+                weight = haversine_distance
             )
     
     return G
 
-async def node_to_json_parser(G: nx.Graph, nodes: List[int]) -> List[Point]:
+def append_starting_node(G: nx.Graph, tsp_route: List[int]) -> List[int]:
+    # Compare the haversine distance between the starting node and each end of the hamiltonian path containing nodes 1 to n-1.
+    # Put starting node 0 next to the hamiltonian end node that is closer.
+    # Reverse the output list if the starting node was put on the right end of the list.
+
+    starting_node = 0
+    lat_0, lng_0 = G.nodes[starting_node]['lat'], G.nodes[starting_node]['lng']
+    left_end = tsp_route[0]
+    lat_left, lng_left = G.nodes[left_end]['lat'], G.nodes[left_end]['lng']
+    right_end = tsp_route[-1]
+    lat_right, lng_right = G.nodes[right_end]['lat'], G.nodes[right_end]['lng']
+
+    if great_circle(lat_0, lng_0, lat_left, lng_left) < great_circle(lat_0, lng_0, lat_right, lng_right): 
+        complete_tsp: List[int] = [0] + tsp_route
+    else:
+        complete_tsp: List[int] = [0] + tsp_route[::-1]
+
+    return complete_tsp
+
+def node_to_json_parser(G: nx.Graph, nodes: List[int]) -> List[Point]:
     ret: List[Point] = []
     for node in nodes:
         ret.append({
