@@ -1,6 +1,6 @@
 import networkx as nx
 from osmnx.distance import great_circle
-from tsp_endpoint.models import Point
+from models import Point
 from typing import List
 
 def create_graph(points: List[Point]) -> nx.Graph: 

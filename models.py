@@ -17,3 +17,8 @@ class Route(BaseModel):
 class DirectionsResponse(BaseModel):
     route: Route
     message: str = None
+
+
+class Point(BaseModel):
+    location_name: str | None
+    coordinates: Tuple[float, float]

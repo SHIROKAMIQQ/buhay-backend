@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Body
 
-from tsp_endpoint.models import Point
+from models import Point
 from tsp_endpoint.auxiliary_functions import create_graph, append_starting_node, node_to_json_parser
 import networkx as nx
 from typing import List
