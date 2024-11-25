@@ -13,7 +13,7 @@ The _tsp endpoint_ accepts a GET Request at the `/tsp` path. This request contai
 The endpoint then returns a list of <b>n</b> `Point`s such that:
 <br /> - The sequence of `Point`s is the shortest path that visits all of the given points from the input. 
 <br /> - The weight of each edge from one point to another is the haversine distance between the two points.
-<br /> - The returned path always starts with the first point from the input list.
+<br /> - The returned path always starts with the _0th_ point from the input list.
 
 ### Dependencies 
 
@@ -36,3 +36,16 @@ class Point(BaseModel):
     location_name: str | None
     coordinates: Tuple[float, float] #[lat: float, lng: float]
 ```
+
+### Auxiliary Functions
+
+#### create_graph
+Takes in a list of `Point`s and then returns a complete, weighted, undirected graph of type `networkx.Graph` such that the weight of edge <b>(i, j)</b> is the haversine distance between points <b>i</b> and <b>j</b>.
+
+#### append_starting_node
+Takes in a graph <b>G</b> of type `networkX.Graph` and a list of `Point`s <b>tsp_route</b> that act as the shortest Hamiltonian path containing points 1 through n-1 (remember, we are using 0-indexing).
+The 0th node of <b>G</b> is then appended to either the left or the right end of <b>tsp_route</b>, depending on which is closer with respect to their haversine distances.
+Should the 0th node be appended to the right side of <tsp_route>, the resulting list would be reversed so that the output would start with the 0th node of <b>G</b>.
+
+#### node_to_json_parser
+Takes in a list of `Points`, which are in a Python format, and then converts them into JSON so that they could be read as the output of _tsp endpoint_.
