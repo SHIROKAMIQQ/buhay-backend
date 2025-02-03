@@ -10,14 +10,21 @@ class RouteInfo(BaseModel):
 class Route(BaseModel):
     duration: float
     distanceKm: float
-    coordinates: List[List[float]]
-    routeInfo: List[RouteInfo]
+    # coordinates: List[List[float]]
+    # routeInfo: List[RouteInfo]
 
 
 class DirectionsResponse(BaseModel):
     route: Route
     geojson: dict
     message: str = None
+
+
+class DirectionsRequest(BaseModel):
+    # Format: "lng,lat"
+    # Example: "121.07471,14.66651"
+    start: str
+    end: str
 
 
 class Point(BaseModel):
