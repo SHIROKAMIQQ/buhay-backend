@@ -12,6 +12,7 @@ from models import Point, TSPinput
 from random import randint
 import time
 
+
 from tests.naive_tsp import naive_tsp # For testing
 from models import TSPinput
 from tests.naive_tsp.structs import Graph, Path, Coordinates
@@ -25,9 +26,23 @@ def total_haversine(points, n):
         total += great_circle(points[i]["coordinates"][0], points[i]["coordinates"][1],points[i+1]["coordinates"][0], points[i+1]["coordinates"][1])
     return total
 
+def generate_points(n: int) -> TSPinput:
+    start: Point = {"coordinates": [randint(0, 100_000), randint(0, 100_000)]}
+    other_points: List[Point] = list()
+    for i in range(n-1):
+        lat = float(randint(0, 100_000))
+        lng = float(randint(0, 100_000))
+        p = {"coordinates":[lat,lng]}
+        other_points.append(p)
+    ret: TSPinput = {
+        "start": start,
+        "other_points": other_points
+    }
+    return ret
+  
 @pytest.mark.asyncio
 async def test_tsp():
-    start = time.time()
+    start = time()
     async with startup_event(app):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request = client.build_request(url="/tsp", method="GET", 
@@ -41,6 +56,7 @@ async def test_tsp():
                 }
             )
             response = await client.send(request)
+
         end = time.time()
         # print("TIME TAKEN: ", end-start)
         print(response.json(), total_haversine(response.json(), 4))
@@ -59,36 +75,23 @@ async def test_tsp():
             {"coordinates": [1.0, 1.0]},
         ]
 
-def generate_points(n: int) -> TSPinput:
-    start: Point = {"coordinates": [randint(0, 100_000), randint(0, 100_000)]}
-    other_points: list[Point] = list()
-    for i in range(n-1):
-        lat = float(randint(0, 100_000))
-        lng = float(randint(0, 100_000))
-        p = {"coordinates":[lat,lng]}
-        other_points.append(p)
-    ret: TSPinput = {
-        "start": start,
-        "other_points": other_points
-    }
-    return ret
-
 @pytest.mark.asyncio
 async def test_time():
     test_cases = 6
     n = 6
-    total_start = time.time()
+    total_start = time()
     for i in range(test_cases):
         body = generate_points(n)
         # print(body)
-        start = time.time()
+        # start = time()
         async with startup_event(app):
             async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
                 request = client.build_request(url="/tsp", method="GET", json=body)
                 response = await client.send(request)
-            end = time.time()
+            # end = time()
             # print(response.json())
             # print(f"RANDOM TEST {i+1} TIME TAKEN: ", end-start)
+
     total_end = time.time()
     print(body)
     print(response.json())
@@ -96,12 +99,14 @@ async def test_time():
     # print(f"TIME TAKEN FOR n={n} {test_cases} TEST CASES: ", total_end-total_start)
     # print(f"AVERAGE TIME FOR n={n} {test_cases} TEST CASES: ", (total_end-total_start)/test_cases)
 
+
 @pytest.mark.asyncio
 async def test_correctness():
     test_cases = 10 # The brute force solver might be very, very slow
     n = 6
 
     print(f'Testing Correctness...')
+
     # total_start = time.time()
     for i in range(test_cases):
         body = generate_points(n)
