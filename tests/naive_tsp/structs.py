@@ -17,7 +17,7 @@ class Graph:
     """
     Represents a complete, weighted, directed graph
     """
-    def __init__(self, nodes: List[Node] = [], edges: List[Edge] = []):
+    def __init__(self, nodes: List[Node] = list(), edges: List[Edge] = list()):
         self._nodes = nodes
         self._edges = edges
 
@@ -42,4 +42,4 @@ class Graph:
         return list(filter(lambda n : n.i == i, self._nodes))[0]
 
 Path = Tuple[float, List[Node]] # total distance, nodes
-Coordinates = Tuple[float, float] # lat, lng
+Coordinates = Tuple[float, float] # lng, lat

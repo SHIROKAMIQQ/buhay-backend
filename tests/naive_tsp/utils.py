@@ -18,16 +18,16 @@ def naive_create_graph(points: List[Point]) -> Graph:
     for i in range(n):
         G.add_node(
             i,
-            lat = points[i]["coordinates"][0], 
-            lng = points[i]["coordinates"][1]
+            lat = points[i]["coordinates"][1], 
+            lng = points[i]["coordinates"][0]
         )
     
     # Add edge (i, j) for each possible i, j combination such that its weight 
     # is the haversine distance between Point i and Point j
     for i in range(n):
-        lat_i, lng_i = points[i]["coordinates"]
+        lng_i, lat_i = points[i]["coordinates"]
         for j in range(i+1, n):
-            lat_j, lng_j = points[j]["coordinates"]
+            lng_j, lat_j = points[j]["coordinates"]
 
             haversine_distance = great_circle(lat_i, lng_i, lat_j, lng_j)
             
@@ -93,7 +93,7 @@ def path_to_json_parser(path: Path) -> List[dict[str, Coordinates]]:
     # Get all points in node_path and make them JSONable.
     # Type should be dict[str, Any] pero since one attribute lang naman, make it strict na.
     point_path: List[dict[str, Coordinates]] = [
-        Point(coordinates=(node.lat, node.lng)).model_dump(mode='json')
+        Point(coordinates=(node.lng, node.lat)).model_dump(mode='json')
         for node in node_path
     ]
 
