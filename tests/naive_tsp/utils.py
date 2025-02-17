@@ -28,7 +28,6 @@ def naive_create_graph(points: List[Point]) -> Graph:
         lng_i, lat_i = points[i]["coordinates"]
         for j in range(i+1, n):
             lng_j, lat_j = points[j]["coordinates"]
-
             haversine_distance = great_circle(lat_i, lng_i, lat_j, lng_j)
             
             G.add_edge(
@@ -40,7 +39,6 @@ def naive_create_graph(points: List[Point]) -> Graph:
 
 
 def h_paths(G: Graph, s: Node, start: Node, visited: dict[int, bool], distance_to_start: float = 0) -> List[Path]:
-
     """
     Get all single-source hamiltonian paths _naively_ using dynamic programming.
     Hopefully this is reasonably slow lang.

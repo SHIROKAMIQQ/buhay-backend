@@ -13,6 +13,7 @@ from random import randint
 from time import time
 from pprint import pprint
 
+
 from tests.naive_tsp import naive_tsp # For testing
 from models import TSPinput
 from tests.naive_tsp.structs import Graph, Path, Coordinates
@@ -23,7 +24,7 @@ from osmnx.distance import great_circle
 def total_haversine(points, n):
     total = 0
     for i in range(n):
-        total += great_circle(points[i]["coordinates"][0], points[i]["coordinates"][1],points[i+1]["coordinates"][0], points[i+1]["coordinates"][1])
+        total += great_circle(points[i]["coordinates"][1], points[i]["coordinates"][0],points[i+1]["coordinates"][1], points[i+1]["coordinates"][0])
     return total
 
 def generate_points(n: int) -> TSPinput:
@@ -88,52 +89,56 @@ async def test_time():
             async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
                 request = client.build_request(url="/tsp", method="GET", json=body)
                 response = await client.send(request)
-            end = time()
-            print("RESPONSE")
-            pprint(response.json())
-            print(f"RANDOM TEST {i+1} TIME TAKEN: ", end-start)
 
     total_end = time()
     print()
     print(f"TIME TAKEN FOR n={n} {test_cases} TEST CASES: ", total_end-total_start)
     print(f"AVERAGE TIME FOR n={n} {test_cases} TEST CASES: ", (total_end-total_start)/test_cases)
 
+async def tsp_case(inp: TSPinput):
+    async with startup_event(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as tsp_client:
+            request = tsp_client.build_request(url="/tsp", method="GET", json=inp)
+            tsp_response = await tsp_client.send(request)
+
+        tsp_json = tsp_response.json()
+        print(f'/tsp: {tsp_json}')
+        print()
+    
+    return tsp_json
+
+
+async def naive_tsp_case(inp: TSPinput):
+    async with startup_event(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as naive_tsp_client:
+            request = naive_tsp_client.build_request(url="/naive_tsp", method="GET", json=inp)
+            naive_tsp_response = await naive_tsp_client.send(request)
+
+        naive_tsp_json = naive_tsp_response.json()
+        print(f'/naive_tsp: {naive_tsp_json}')
+        print()
+
+    return naive_tsp_json
+
 
 @pytest.mark.asyncio
 async def test_correctness():
     test_cases = 10 # The brute force solver might be very, very slow
-    n = 6
 
     print(f'Testing Correctness...')
+    total_start = time()
 
-    # total_start = time.time()
     for i in range(test_cases):
-        body = generate_points(n)
+        n = 6
+        inp = generate_points(n)
+        print(f'{i}: {inp}')
+        print()
 
-        G: Graph = naive_create_graph([body["start"]] + body["other_points"])
-        tsp_route: Path = min_hamiltonian_paths(G)[0]
-        naive_response = path_to_json_parser(tsp_route)
-        pprint(body)
+        tsp_result = await tsp_case(inp)
+        naive_tsp_result = await naive_tsp_case(inp)
+        assert(tsp_result == naive_tsp_result)
 
-        async with startup_event(app):
-            # tsp_start = time.time()
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as tsp_client:
-                tsp_request = tsp_client.build_request(url="/tsp", method="GET", json=body)
-                tsp_response = await tsp_client.send(tsp_request)
-            # tsp_end = time.time()
-            # print(f'Test {i + 1}, /tsp: {tsp_end - tsp_start}')
+    total_end = time()
 
-            print(f"{i}TSP: ")
-            pprint(tsp_response.json())
-            pprint(total_haversine(tsp_response.json(), n))
-            pprint(f"{i}NVE: ") 
-            pprint(naive_response) 
-            pprint(total_haversine(naive_response, n))
-            print()
-
-        assert(tsp_response.json() == naive_response or tsp_response.json() == naive_response[::-1])
-
-    # total_end = time.time()
-
-    # print(f'Total time: {total_end - total_start}')
-    # print(f'Average time per test case: {(total_end - total_start) / test_cases}')
+    print(f'Total time: {total_end - total_start}')
+    print(f'Average time per test case: {(total_end - total_start) / test_cases}')
