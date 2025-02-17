@@ -10,8 +10,8 @@ from main import app, startup_event
 from models import Point, TSPinput
 
 from random import randint
-import time
-
+from time import time
+from pprint import pprint
 
 from tests.naive_tsp import naive_tsp # For testing
 from models import TSPinput
@@ -19,7 +19,7 @@ from tests.naive_tsp.structs import Graph, Path, Coordinates
 from tests.naive_tsp.utils import naive_create_graph, min_hamiltonian_paths, path_to_json_parser
 
 from osmnx.distance import great_circle
-from pprint import pprint
+
 def total_haversine(points, n):
     total = 0
     for i in range(n):
@@ -32,7 +32,7 @@ def generate_points(n: int) -> TSPinput:
     for i in range(n-1):
         lat = float(randint(0, 100_000))
         lng = float(randint(0, 100_000))
-        p = {"coordinates":[lat,lng]}
+        p = {"coordinates":[lng,lat]}
         other_points.append(p)
     ret: TSPinput = {
         "start": start,
@@ -57,7 +57,7 @@ async def test_tsp():
             )
             response = await client.send(request)
 
-        end = time.time()
+        end = time()
         # print("TIME TAKEN: ", end-start)
         print(response.json(), total_haversine(response.json(), 4))
         print(total_haversine([
@@ -82,22 +82,21 @@ async def test_time():
     total_start = time()
     for i in range(test_cases):
         body = generate_points(n)
-        # print(body)
-        # start = time()
+        pprint(body)
+        start = time()
         async with startup_event(app):
             async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
                 request = client.build_request(url="/tsp", method="GET", json=body)
                 response = await client.send(request)
-            # end = time()
-            # print(response.json())
-            # print(f"RANDOM TEST {i+1} TIME TAKEN: ", end-start)
+            end = time()
+            print("RESPONSE")
+            pprint(response.json())
+            print(f"RANDOM TEST {i+1} TIME TAKEN: ", end-start)
 
-    total_end = time.time()
-    print(body)
-    print(response.json())
+    total_end = time()
     print()
-    # print(f"TIME TAKEN FOR n={n} {test_cases} TEST CASES: ", total_end-total_start)
-    # print(f"AVERAGE TIME FOR n={n} {test_cases} TEST CASES: ", (total_end-total_start)/test_cases)
+    print(f"TIME TAKEN FOR n={n} {test_cases} TEST CASES: ", total_end-total_start)
+    print(f"AVERAGE TIME FOR n={n} {test_cases} TEST CASES: ", (total_end-total_start)/test_cases)
 
 
 @pytest.mark.asyncio
