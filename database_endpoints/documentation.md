@@ -1,6 +1,7 @@
 This file serves as documentation for all database endpoints.
 
 - [/login](#login)
+- [/convert_coordinates](#convert_coordinates)
 
 # /login
 
@@ -41,4 +42,35 @@ If there is no match, the endpoint will return `person_id = 0` and `access_contr
 }
 ```
 
+# /convert_coordinates
+
+Given a list of `Point`s of longitude-latitude coordinates, this endpoint returns the `location_names: list[str]` that represents the street address of each coordinate, in the same order.
+
+**Sample Input**
+```JSON
+[
+    {
+        "coordinates": [
+            121.06846773745589,
+            14.648772127025484
+      ]
+    },
+    {
+        "coordinates":[
+            121.05786349512705,
+            14.643245228663027
+        ]
+    }
+]
+```
+
+**Sample Output**
+```JSON
+{
+    "location_names": [
+        "University of the Philippines Alumni Engineers' Centennial Hall, P. Velasquez Street, Diliman, Quezon City, 1800 Metro Manila, Philippines",
+        "41-B Mapagkawanggawa, Diliman, Lungsod Quezon, 1101 Kalakhang Maynila, Philippines"
+    ]
+}
+```
 
