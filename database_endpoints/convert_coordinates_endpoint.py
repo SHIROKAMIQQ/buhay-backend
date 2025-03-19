@@ -8,7 +8,7 @@ router = APIRouter()
 from db_env import GOOGLE_MAPS_API
 gmaps = googlemaps.Client(key = GOOGLE_MAPS_API)
 
-@router.get("/convert_coordinates", status_code = status.HTTP_200_OK)
+@router.post("/convert_coordinates", status_code = status.HTTP_200_OK)
 async def convert_coordinates(points: list[Point]):
     try:
         location_names: list[str]= list()
@@ -16,7 +16,7 @@ async def convert_coordinates(points: list[Point]):
             print(point)
             lng, lat = point.coordinates[0], point.coordinates[1]
             location_names.append(gmaps.reverse_geocode((lat, lng), result_type="street_address")[0]["formatted_address"])
-        return {"location_names": location_names}
+        return {"locations": location_names}
     
     except ValueError as e:
         # Handle specific exceptions with a 400 Bad Request

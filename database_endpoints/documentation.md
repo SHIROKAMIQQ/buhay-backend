@@ -44,7 +44,7 @@ If there is no match, the endpoint will return `person_id = 0` and `access_contr
 
 # /convert_coordinates
 
-Given a list of `Point`s of longitude-latitude coordinates, this endpoint returns the `location_names: list[str]` that represents the street address of each coordinate, in the same order.
+Given a list of `Point`s of longitude-latitude coordinates, this endpoint returns the `locations: list[str]` that represents the street address of each coordinate, in the same order.
 
 **Sample Input**
 ```JSON
@@ -67,7 +67,7 @@ Given a list of `Point`s of longitude-latitude coordinates, this endpoint return
 **Sample Output**
 ```JSON
 {
-    "location_names": [
+    "locations": [
         "University of the Philippines Alumni Engineers' Centennial Hall, P. Velasquez Street, Diliman, Quezon City, 1800 Metro Manila, Philippines",
         "41-B Mapagkawanggawa, Diliman, Lungsod Quezon, 1101 Kalakhang Maynila, Philippines"
     ]
