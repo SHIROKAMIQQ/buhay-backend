@@ -235,4 +235,19 @@ The endpoint is given a `route_id: int`. It then fetches the data `route_data` o
 }
 ```
 
+# /update_rescued
+The endpoint is given a `request_id: int`. It then updates the `rescued` field of the `request_id`'s row to `True`.
 
+**Sample Input**
+```JSON
+{
+    "request_id": 14
+}
+```
+
+**Sample Output**
+```JSON
+{
+    "message": "done"
+}
+```
