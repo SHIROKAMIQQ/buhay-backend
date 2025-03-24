@@ -7,6 +7,16 @@ from routing.load_data import load_flooded_areas
 from tsp_endpoint import main_tsp
 from tests.naive_tsp import naive_tsp  # For testing
 
+from database_endpoints import (
+    convert_coordinates,
+    login_endpoint,
+    add_request,
+    get_route_info,
+    save_route,
+    update_rescued,
+    update_ongoing_endpoint,
+)
+
 from routing.route_directions import directions
 from models import DirectionsRequest
 from routing.cache_database import (
@@ -14,14 +24,6 @@ from routing.cache_database import (
     close_database_connection,
 )
 from models import Point
-from database_endpoints import (
-    login,
-    convert_coordinates,
-    add_request,
-    save_route,
-    get_route_info,
-    update_rescued
-)
 from qc_coordinates import check_point_in_polygon
 from own_websocket import own_socket
 
@@ -43,12 +45,13 @@ app = FastAPI(lifespan=startup_event)
 app.include_router(main_tsp.router)
 app.include_router(naive_tsp.router)  # For testing
 app.include_router(own_socket.router)
-app.include_router(login.router)
+app.include_router(login_endpoint.router)
 app.include_router(convert_coordinates.router)
 app.include_router(add_request.router)
-app.include_router(save_route.router)
 app.include_router(get_route_info.router)
+app.include_router(save_route.router)
 app.include_router(update_rescued.router)
+app.include_router(update_ongoing_endpoint.router)
 
 
 # app.include_router(route_directions.router)
@@ -74,4 +77,3 @@ async def test():
     with open("sample_data.json", "r") as f:
         json_data = json.load(f)
     return json_data
-
