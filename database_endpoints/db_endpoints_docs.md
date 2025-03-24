@@ -251,3 +251,21 @@ The endpoint is given a `request_id: int`. It then updates the `rescued` field o
     "message": "done"
 }
 ```
+
+# /update_ongoing
+
+The endpoint is given a `request_id: int`. It then updates the `ongoing` field of the `request_id`'s row to `True`.
+
+**Sample Input**
+```JSON
+{
+    "request_id": 14
+}
+```
+
+**Sample Output**
+```JSON
+{
+    "message": "done"
+}
+```
