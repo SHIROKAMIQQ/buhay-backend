@@ -269,3 +269,22 @@ The endpoint is given a `request_id: int`. It then updates the `ongoing` field o
     "message": "done"
 }
 ```
+
+# /get_rescuers
+
+When the endpoint is called, it returns all the persons from `people` table with an `access_control = 2`. 
+
+*Note: This endpoint does not need an input body.*
+
+**Sample Output**
+```JSON
+{
+    "rescuers": [
+        {
+            "person_id": 2,
+            "username": "Rescuer1"
+        },
+        // ...
+    ]
+}
+```
