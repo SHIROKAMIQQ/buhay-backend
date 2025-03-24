@@ -168,7 +168,7 @@ The endpoint is given a request ID `request_id: int`, a starting point `start: P
 
 **Sample Inserted Row in Route_Info**
 
-*Note: `route_id` is the incremented primary id of the new row. 
+*Note: `route_id` is the incremented primary id of the new row.*
 ```JSON
     "route_id": 6,
     "route_data": {
@@ -214,3 +214,25 @@ The endpoint is given a request ID `request_id: int`, a starting point `start: P
     // Other Fields remain the same
 }
 ```
+
+# /get_route_info
+The endpoint is given a `route_id: int`. It then fetches the data `route_data` of that `route_id` from the `route_info` table.
+
+**Sample Input**
+```JSON
+{
+    "route_id": 45
+}
+```
+
+**Sample Output**
+```JSON
+{
+    "payload": {
+        "route_id": 45,
+        "route_data": // Corresponding route_data JSON in route_info table
+    }
+}
+```
+
+
